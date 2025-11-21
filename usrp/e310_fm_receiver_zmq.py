@@ -43,7 +43,7 @@ class e310_fm_receiver_zmq(gr.top_block):
         # Variables
         ##################################################
         self.server_port = server_port = 30000
-        self.server_address = server_address = "192.168.10.2"
+        self.server_address = server_address = "172.16.2.116"
         self.samp_rate = samp_rate = 1e6
         self.lpf_decim = lpf_decim = 5
         self.audio_samp_rate = audio_samp_rate = 48e3
