@@ -97,8 +97,16 @@ class RX_FM_USRP_UDP(gr.top_block):
         )
 
         # Send complex baseband samples over UDP to host
+
+
         self.udp_sink = network.udp_sink(
-            gr.sizeof_gr_complex, '172.16.2.116', 9997, 1472, True
+            itemsize=gr.sizeof_gr_complex,  # size of one item
+            veclen=1,                        # vector length
+            host='172.16.2.116',                # destination IP
+            port=9997,                      # destination port
+            header_type=0,                   # usually 0 for no header
+            payloadsize=1472,                # typical UDP payload size
+            send_eof=True                    # send EOF when done
         )
 
         ##################################################
