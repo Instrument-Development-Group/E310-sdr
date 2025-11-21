@@ -8,9 +8,6 @@ import pmt
 from gnuradio import gr, blocks, analog, filter, uhd, zeromq
 from gnuradio.filter import firdes
 
-from message_to_gain import message_to_gain  # Custom block: maps incoming ZMQ messages to gain updates
-
-
 class message_to_gain(gr.sync_block):
     def __init__(self):
         gr.sync_block.__init__(self,
