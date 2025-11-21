@@ -73,7 +73,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '"192.168.10.2"'
+    value: '"172.16.1.202"'
   states:
     bus_sink: false
     bus_source: false
