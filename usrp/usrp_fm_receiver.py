@@ -4,6 +4,7 @@
 import time
 import signal
 import sys
+import numpy
 import pmt
 from gnuradio import gr, blocks, network, analog, filter, uhd, zeromq
 from gnuradio.filter import firdes, window
@@ -30,24 +31,20 @@ class message_to_gain(gr.sync_block):
 
 
 class message_to_freq(gr.sync_block):
-    def __init__(self):
+    def __init__(self, freq):
         gr.sync_block.__init__(self,
             name="message_to_freq",
-            in_sig=None,
-            out_sig=[float])
-        self.message_port_register_in(pmt.intern('msg_in'))
-        self.set_msg_handler(pmt.intern('msg_in'), self.handle_msg)
+            in_sig=[numpy.float32],
+            out_sig=[numpy.float32]
+        )
 
-    def handle_msg(self, msg):
-        try:
-            freq = float(pmt.symbol_to_string(msg))
-            self.output(freq)
-        except:
-            pass
 
-    def output(self, freq):
-        self.add_item_tag(0, self.nitems_written(0), pmt.intern("freq"), pmt.from_double(freq))
-
+    def work(self, input_items, output_items):
+        in0 = input_items[0]
+        out = output_items[0]
+        req = float(pmt.symbol_to_string(in0))
+        out[:] = req
+        return len(output_items[0])
 
 class RX_FM_USRP_UDP(gr.top_block):
     def __init__(self):
