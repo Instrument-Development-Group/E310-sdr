@@ -5,8 +5,8 @@ import time
 import signal
 import sys
 import pmt
-from gnuradio import gr, blocks, analog, filter, uhd, zeromq, window
-from gnuradio.filter import firdes
+from gnuradio import gr, blocks, analog, filter, uhd, zeromq
+from gnuradio.filter import firdes, window
 
 class message_to_gain(gr.sync_block):
     def __init__(self):
