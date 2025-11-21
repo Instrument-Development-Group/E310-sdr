@@ -5,7 +5,7 @@ import time
 import signal
 import sys
 import pmt
-from gnuradio import gr, blocks, analog, filter, uhd, zeromq
+from gnuradio import gr, blocks, analog, filter, uhd, zeromq, window
 from gnuradio.filter import firdes
 
 class message_to_gain(gr.sync_block):
@@ -88,7 +88,7 @@ class RX_FM_USRP_UDP(gr.top_block):
         # Low-pass filter to isolate FM bandwidth
         self.lowpass = filter.fir_filter_ccf(
             decimation=10,
-            taps=firdes.low_pass(1, self.samp_rate, 90e3, 5e3, firdes.WIN_HAMMING)
+            taps=firdes.low_pass(1, self.samp_rate, 90e3, 5e3, window.WIN_HAMMING)
         )
 
         # Rational resampler to adjust sample rate for UDP sink
