@@ -5,7 +5,7 @@ import time
 import signal
 import sys
 import pmt
-from gnuradio import gr, blocks, analog, filter, uhd, zeromq
+from gnuradio import gr, blocks, network, analog, filter, uhd, zeromq
 from gnuradio.filter import firdes, window
 
 class message_to_gain(gr.sync_block):
@@ -97,7 +97,7 @@ class RX_FM_USRP_UDP(gr.top_block):
         )
 
         # Send complex baseband samples over UDP to host
-        self.udp_sink = blocks.udp_sink(
+        self.udp_sink = network.udp_sink(
             gr.sizeof_gr_complex, '172.16.2.116', 9997, 1472, True
         )
 
