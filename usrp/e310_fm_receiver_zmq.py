@@ -71,7 +71,7 @@ class e310_fm_receiver_zmq(gr.top_block):
         self.uhd_usrp_source_0.set_time_unknown_pps(uhd.time_spec(0))
 
         self.uhd_usrp_source_0.set_center_freq(freq, 0)
-        self.uhd_usrp_source_0.set_antenna('TX/RX', 0)
+        self.uhd_usrp_source_0.set_antenna("TX/RX", 0)
         self.uhd_usrp_source_0.set_gain(rx_gain, 0)
         self.low_pass_filter_0 = filter.fir_filter_ccf(
             lpf_decim,
