@@ -83,17 +83,17 @@ class fm_transmiter_zmq(gr.top_block):
                 1,
                 samp_rate,
                 300,
-                5k,
+                5000,
                 200,
                 window.WIN_HAMMING,
                 6.76))
         self.audio_source_0 = audio.source(samp_rate, '', True)
-        self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 0, 150m, 0, 0)
+        self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 0, 150, 0, 0)
         self.analog_nbfm_tx_0 = analog.nbfm_tx(
         	audio_rate=48000,
         	quad_rate=192000,
         	tau=(75e-6),
-        	max_dev=5e3,
+        	max_dev=5000,
         	fh=(-1.0),
                 )
 
@@ -147,7 +147,7 @@ class fm_transmiter_zmq(gr.top_block):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
-        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5k, 200, window.WIN_HAMMING, 6.76))
+        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5000, 200, window.WIN_HAMMING, 6.76))
         self.uhd_usrp_sink_0.set_samp_rate(self.samp_rate)
 
     def get_lpf_decim(self):

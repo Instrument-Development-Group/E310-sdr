@@ -125,7 +125,7 @@ blocks:
     audio_rate: '48000'
     comment: ''
     fh: '-1.0'
-    max_dev: 5e3
+    max_dev: '5000'
     maxoutbuf: '0'
     minoutbuf: '0'
     quad_rate: '192000'
@@ -188,7 +188,7 @@ blocks:
     comment: ''
     decim: '1'
     gain: '1'
-    high_cutoff_freq: 5k
+    high_cutoff_freq: '5000'
     interp: '1'
     low_cutoff_freq: '300'
     maxoutbuf: '0'
