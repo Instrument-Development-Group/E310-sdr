@@ -10,6 +10,7 @@
 # GNU Radio version: 3.10.12.0
 
 from gnuradio import analog
+from gnuradio import audio
 from gnuradio import blocks
 from gnuradio import filter
 from gnuradio.filter import firdes
@@ -69,7 +70,7 @@ class fm_transmiter_zmq(gr.top_block):
             "",
         )
         self.uhd_usrp_sink_0.set_samp_rate(samp_rate)
-        self.uhd_usrp_sink_0.set_time_unknown_pps(uhd.time_spec(0))
+        # No synchronization enforced.
 
         self.uhd_usrp_sink_0.set_center_freq(freq, 0)
         self.uhd_usrp_sink_0.set_antenna("TX/RX", 0)
@@ -86,8 +87,8 @@ class fm_transmiter_zmq(gr.top_block):
                 200,
                 window.WIN_HAMMING,
                 6.76))
-        self.audio_source_0 = blocks.null_source(gr.sizeof_float)
-        self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 0, 150, 0, 0)
+        self.audio_source_0 = audio.source(samp_rate, '', True)
+        self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 1000, 0.5, 0, 0)
         self.analog_nbfm_tx_0 = analog.nbfm_tx(
         	audio_rate=48000,
         	quad_rate=192000,
