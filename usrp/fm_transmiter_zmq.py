@@ -10,7 +10,6 @@
 # GNU Radio version: 3.10.12.0
 
 from gnuradio import analog
-from gnuradio import audio
 from gnuradio import blocks
 from gnuradio import filter
 from gnuradio.filter import firdes
@@ -87,7 +86,7 @@ class fm_transmiter_zmq(gr.top_block):
                 200,
                 window.WIN_HAMMING,
                 6.76))
-        self.audio_source_0 = audio.source(samp_rate, '', True)
+        self.audio_source_0 = blocks.null_source(gr.sizeof_float)
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 0, 150, 0, 0)
         self.analog_nbfm_tx_0 = analog.nbfm_tx(
         	audio_rate=48000,
