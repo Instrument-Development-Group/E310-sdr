@@ -10,11 +10,8 @@
 # GNU Radio version: 3.10.12.0
 
 from gnuradio import analog
-from gnuradio import audio
-from gnuradio import blocks
-from gnuradio import filter
-from gnuradio.filter import firdes
 from gnuradio import gr
+from gnuradio.filter import firdes
 from gnuradio.fft import window
 import sys
 import signal
@@ -74,23 +71,11 @@ class fm_transmiter_zmq(gr.top_block):
 
         self.uhd_usrp_sink_0.set_center_freq(freq, 0)
         self.uhd_usrp_sink_0.set_antenna("TX/RX", 0)
+        self.uhd_usrp_sink_0.set_bandwidth(5000, 0)
         self.uhd_usrp_sink_0.set_gain(tx_gain, 0)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(5)
-        self.blocks_add_xx_0 = blocks.add_vff(1)
-        self.band_pass_filter_0 = filter.fir_filter_fff(
-            1,
-            firdes.band_pass(
-                1,
-                samp_rate,
-                300,
-                5000,
-                200,
-                window.WIN_HAMMING,
-                6.76))
-        self.audio_source_0 = audio.source(samp_rate, '', True)
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 1000, 0.5, 0, 0)
         self.analog_nbfm_tx_0 = analog.nbfm_tx(
-        	audio_rate=48000,
+        	audio_rate=samp_rate,
         	quad_rate=192000,
         	tau=(75e-6),
         	max_dev=5000,
@@ -102,11 +87,7 @@ class fm_transmiter_zmq(gr.top_block):
         # Connections
         ##################################################
         self.connect((self.analog_nbfm_tx_0, 0), (self.uhd_usrp_sink_0, 0))
-        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_add_xx_0, 0))
-        self.connect((self.audio_source_0, 0), (self.band_pass_filter_0, 0))
-        self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.blocks_add_xx_0, 0), (self.analog_nbfm_tx_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.analog_sig_source_x_0, 0), (self.analog_nbfm_tx_0, 0))
 
 
     def get_freq(self):
@@ -147,7 +128,6 @@ class fm_transmiter_zmq(gr.top_block):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
-        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5000, 200, window.WIN_HAMMING, 6.76))
         self.uhd_usrp_sink_0.set_samp_rate(self.samp_rate)
 
     def get_lpf_decim(self):
