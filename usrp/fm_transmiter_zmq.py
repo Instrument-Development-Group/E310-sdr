@@ -9,8 +9,12 @@
 # Author: julianajaime
 # GNU Radio version: 3.10.12.0
 
-from gnuradio import gr
+from gnuradio import analog
+from gnuradio import audio
+from gnuradio import blocks
+from gnuradio import filter
 from gnuradio.filter import firdes
+from gnuradio import gr
 from gnuradio.fft import window
 import sys
 import signal
@@ -19,7 +23,6 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import uhd
 import time
-from gnuradio import zeromq
 from xmlrpc.server import SimpleXMLRPCServer
 import threading
 
@@ -52,7 +55,6 @@ class fm_transmiter_zmq(gr.top_block):
         # Blocks
         ##################################################
 
-        self.zeromq_pull_source_0 = zeromq.pull_source(gr.sizeof_gr_complex, 1, 'tcp://*:9998', 100, False, (-1), True)
         self.xmlrpc_server_0_0 = SimpleXMLRPCServer((str(server_address), int(server_port)), allow_none=True)
         self.xmlrpc_server_0_0.register_instance(self)
         self.xmlrpc_server_0_0_thread = threading.Thread(target=self.xmlrpc_server_0_0.serve_forever)
@@ -73,12 +75,38 @@ class fm_transmiter_zmq(gr.top_block):
         self.uhd_usrp_sink_0.set_center_freq(freq, 0)
         self.uhd_usrp_sink_0.set_antenna("TX/RX", 0)
         self.uhd_usrp_sink_0.set_gain(tx_gain, 0)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(5)
+        self.blocks_add_xx_0 = blocks.add_vff(1)
+        self.band_pass_filter_0 = filter.fir_filter_fff(
+            1,
+            firdes.band_pass(
+                1,
+                samp_rate,
+                300,
+                5k,
+                200,
+                window.WIN_HAMMING,
+                6.76))
+        self.audio_source_0 = audio.source(samp_rate, '', True)
+        self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 0, 150m, 0, 0)
+        self.analog_nbfm_tx_0 = analog.nbfm_tx(
+        	audio_rate=48000,
+        	quad_rate=192000,
+        	tau=(75e-6),
+        	max_dev=5e3,
+        	fh=(-1.0),
+                )
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.zeromq_pull_source_0, 0), (self.uhd_usrp_sink_0, 0))
+        self.connect((self.analog_nbfm_tx_0, 0), (self.uhd_usrp_sink_0, 0))
+        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_add_xx_0, 0))
+        self.connect((self.audio_source_0, 0), (self.band_pass_filter_0, 0))
+        self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.blocks_add_xx_0, 0), (self.analog_nbfm_tx_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_add_xx_0, 1))
 
 
     def get_freq(self):
@@ -118,6 +146,8 @@ class fm_transmiter_zmq(gr.top_block):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
+        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5k, 200, window.WIN_HAMMING, 6.76))
         self.uhd_usrp_sink_0.set_samp_rate(self.samp_rate)
 
     def get_lpf_decim(self):
